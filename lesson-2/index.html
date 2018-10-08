@@ -38,17 +38,24 @@
     if (el.classList.contains('open-card')) {
       //Берем значение data-key для :id
       const parentEl = findParents(el, 'card-wrapper');
+      const body = parentEl.querySelector('.card-body');
+      let newData = '';
+      //Показываем пользователю что идет загрузка
+      body.innerHTML = 'Идет загрузка...';
+
       fetch(`${BASE_URL}/user/${parentEl.dataset.key}`)
         .then(result => result.json())
         .then(data => {
-          let newData = '';
           //Поля в объектах разные поэтому проходимся по всем и выводим в карточку
           for (let v in data) {
             (v === 'name')
               ? newData += `<h5 class="card-title text-center">${data[v]}</h5>`
               : newData += `<p class="card-text text-center">${data[v]}</p>`;
           }
-          parentEl.querySelector('.card-body').innerHTML = newData;
+          body.innerHTML = newData;
+        })
+        .catch(error => {
+          body.innerHTML = `<p>Ошибка: ${error}</p>`;
         })
     }
   });
@@ -59,9 +66,10 @@
     * Проходим по массиву объектов и создаем на основе каждого карточку
     * Т.к однозначный id в объектах отсутствует то взял за основу индекс элемента+1 (для соответствия запросу user/:id)
     * */
+    let text = '';
     data.forEach((item, index) => {
-      row.innerHTML +=
-        `<div class="col-sm-4 mb-4 card-wrapper" data-key="${index + 1}">
+      text +=
+        `<div class="col-sm-4 col-lg-3 mb-4 card-wrapper" data-key="${index + 1}">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">${item.name}</h5>
@@ -69,15 +77,22 @@
                      <a href="#" class="btn btn-primary open-card">Узнать больше</a>
                     </div>
                 </div>`
-    })
+    });
+    //Данные вставляю не в цикле, чтобы страница меньше проходила через процесс визуализации
+    row.innerHTML = text;
   };
 
   window.addEventListener('load', () => {
+    //Показываем пользователю что идет загрузка
+    row.innerHTML = 'Идет загрузка...';
     fetch(`${BASE_URL}/user`)
       .then(result => result.json())
       .then(data => {
         //Вызываем функцию отрисовки карточек и передаем в неё данные с сервера
         drawElements(data)
+      })
+      .catch(error => {
+       row.innerHTML = `<p>Ошибка: ${error}</p>`;
       })
   });
 
