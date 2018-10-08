@@ -11,6 +11,21 @@
 </head>
 <body>
 <div class="container mt-4">
+    <form class="mb-5">
+        <div class="form-group">
+            <label for="name">Имя</label>
+            <input type="text" class="form-control" id="name" placeholder="Введите имя">
+        </div>
+        <div class="form-group">
+            <label for="mail">Email</label>
+            <input type="email" class="form-control" id="mail" placeholder="Email">
+        </div>
+        <div class="form-group">
+            <label for="age">Email</label>
+            <input type="text" class="form-control" id="age" placeholder="Возраст">
+        </div>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
     <div class="row">
         <!--Место для карточек-->
     </div>
@@ -92,7 +107,7 @@
         drawElements(data)
       })
       .catch(error => {
-       row.innerHTML = `<p>Ошибка: ${error}</p>`;
+        row.innerHTML = `<p>Ошибка: ${error}</p>`;
       })
   });
 
