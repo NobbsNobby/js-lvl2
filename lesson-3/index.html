@@ -2,60 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>form validate</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <style>
         .quotes {
             background-color: rgba(255, 138, 0, 0.6);
         }
+        @media (min-width: 576px) {
+            .out {
+                margin-top: 1.5rem;
+            }
+        }
+        .form-control {
+            box-shadow: none !important;
+        }
+        input:required:valid {
+            border-color: green;
+        }
+        .feedback__wrapper {
+            margin-top: 10px;
+            margin-bottom: 40px;
+            padding-left: 20px;
+        }
+        .feedback {
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 80%;
+            color: gray;
+        }
+        .feedback.valid {
+            color: #28a745;
+        }
+        .feedback.invalid {
+            color: #dc3545;
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
-    <form>
+    <form class="form mt-4">
         <div class="form-group">
             <label for="name">Имя</label>
-            <input type="text" class="form-control" id="name">
+            <input type="text" class="form-control" id="name" data-validate="name">
         </div>
         <div class="form-group">
             <label for="phone">Телефон</label>
-            <input type="tel" class="form-control" id="phone" >
+            <input type="tel" class="form-control" id="phone" data-validate="phone">
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" class="form-control" id="email">
+            <input type="email" class="form-control" id="email" data-validate="email">
         </div>
-        <div class="form-group">
-            <label for="password">Пароль</label>
-            <input type="password" class="form-control" id="password">
-        </div>
-        <div class="row">
-            <div class="col">
+        <div class="row mb-4">
+            <div class="col-12 col-sm-6">
                 <div class="form-group">
                     <label for="text">Текст</label>
-                    <textarea  id="text" class="form-control input" rows="7"></textarea>
+                    <textarea  id="text" class="form-control input no-validate" rows="7"></textarea>
                 </div>
             </div>
-            <div class="col mt-4">
-                <small class="form-text text-muted out" style="white-space: pre-line; max-width: 500px"></small>
+            <div class="col-12 col-sm-6 mt-0">
+                <small class="form-text text-muted out" style="white-space: pre-line; max-width: 500px">We'll never share your email with anyone else.</small>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Отправить</button>
     </form>
 </div>
-<script>
-  const inp = document.querySelector('.input');
-  const out = document.querySelector('.out');
-
-
-  //Первое задание
-  inp.value = `Some humans would do anything to see if it was possible to do it.\nIf you put a large switch in some cave somewhere, with a sign on it saying\n'End-of-the-World Switch. PLEASE DO NOT TOUCH', the paint wouldn't even have time to dry.`;
-  out.innerHTML = inp.value.replace(/(?<![А-ЯЁа-яё\w])'|'(?![А-ЯЁа-яё\w])/gm, '<span class="quotes">"</span>');
-
-  inp.addEventListener('input', (e) => {
-    console.log(e.target.value);
-    out.innerHTML = `${e.target.value}`.replace(/(?<![А-ЯЁа-яё\w])'|'(?![А-ЯЁа-яё\w])/gm, '<span class="quotes">"</span>')
-  })
-</script>
+<script src="js.js"></script>
 </body>
 </html>
