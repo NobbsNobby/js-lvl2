@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">-->
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            font-size: 16px;
+            line-height: 1.4em;
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-rows: 40px 1fr;
+        }
+
+        .tabs__nav {
+            grid-area: 1 / 1/ 2/ -1;
+        }
+
+        .tabs__item {
+            display: none;
+            grid-area: 2 / 1/ 3/ -1;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 0 1px #4f9fcf;
+        }
+
+        .tabs__item.active {
+            display: block;
+        }
+
+        .tabs__nav {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .tabs__btn {
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 0 0 1px #4f9fcf;
+            cursor: pointer;
+        }
+
+        .tabs__btn.active {
+            color: white;
+            background-color: #4f9fcf;
+        }
+
+        .tabs__btn:hover {
+            background-color: rgba(79, 159, 207, 0.5);
+        }
+
+        form {
+            margin-top: 50px;
+        }
+        .input-group ul {
+            list-style: none;
+            max-height: 300px;
+            max-width: 200px;
+            overflow: paged-y;
+            overflow: auto;
+        }
+        .input-group li {
+            cursor: pointer;
+        }
+        .input-group li:hover {
+            background-color: rgba(79, 159, 207, 0.5);
+        }
+    </style>
+</head>
+<body>
+<div class="tabs">
+    <ul class="tabs__nav">
+        <li class="tabs__btn active">Первая вкладка</li>
+        <li class="tabs__btn">Вторая вкладка</li>
+        <li class="tabs__btn">Третья вкладка</li>
+        <li class="tabs__btn">Четвертая вкладка</li>
+    </ul>
+    <div class="tabs__item active">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus, eos explicabo in nobis praesentium repellat
+        sequi vero voluptatem? Autem blanditiis eum facere fuga maiores minus molestias omnis quidem rerum sequi!
+        Ducimus, eos explicabo in nobis praesentium repellat sequi vero voluptatem? Autem blanditiis eum facere fuga
+        maiores minus molestias omnis quidem rerum sequi!
+        Ducimus, eos explicabo in nobis praesentium repellat sequi vero voluptatem? Autem blanditiis eum facere fuga
+        maiores minus molestias omnis quidem rerum sequi!
+    </div>
+    <div class="tabs__item">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus, eos explicabo in nobis praesentium repellat
+        sequi vero voluptatem? Autem blanditiis eum facere fuga maiores minus molestias omnis quidem rerum sequi!
+    </div>
+    <div class="tabs__item">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus, eos explicabo in nobis praesentium repellat
+        sequi vero voluptatem? Autem blanditiis eum facere fuga maiores minus molestias omnis quidem rerum sequi!
+        Ducimus, eos explicabo in nobis praesentium repellat sequi vero voluptatem? Autem blanditiis eum facere fuga
+        maiores minus molestias omnis quidem rerum sequi!
+    </div>
+    <div class="tabs__item">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus, eos explicabo in nobis praesentium repellat
+        sequi vero voluptatem? Autem blanditiis eum facere fuga maiores minus molestias omnis quidem rerum sequi!
+    </div>
+    <div class="tabs__item">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus, eos explicabo in nobis praesentium repellat
+        sequi vero voluptatem? Autem blanditiis eum facere fuga maiores minus molestias omnis quidem rerum sequi!
+    </div>
+
+    <form action="">
+        <div>
+            <label for="countries">Выберите страну</label>
+            <select name="countries" id="countries">
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="countries2">Выберите страну</label>
+            <input type="text" name="countries2" id="countries2">
+            <ul></ul>
+        </div>
+    </form>
+</div>
+<script>
+  //Первое задание
+  const navItems = $('.tabs__btn');
+  const tabsItems = $('.tabs__item');
+  navItems.on('click', function () {
+    $(this)
+      .addClass('active')
+      .siblings()
+      .removeClass('active');
+    tabsItems.eq($(this).index())
+      .addClass('active')
+      .siblings()
+      .removeClass('active');
+  });
+
+  //Второе + третье задание
+  const select = $('#countries');
+  const selectInput = $('#countries2');
+  const countriesList = $('.input-group ul');
+  let dataArr = [];
+  $.ajax({
+    url: 'countries.json',
+  })
+    .done(function (data) {
+      // Сохраняем данные в массив чтобы не обращаться лишний раз к серверу
+      dataArr = data;
+
+      let countriesEl = '';
+      data.forEach((item) => {
+        countriesEl += `<option value="${item.code}">${item.name}</option>`
+      });
+      select.html(countriesEl)
+    });
+
+  function filter(arr, string) {
+    return arr.filter(el => el.name.includes(string))
+  }
+
+  selectInput.on('keyup', function () {
+    const countriesList = $('.input-group ul');
+    let text = '';
+    filter(dataArr, $(this).val()).forEach(item => {
+      text += `<li>${item.name}</li>`;
+    });
+    countriesList.html(text);
+
+    $('.input-group li').on('click', function () {
+      selectInput.val($(this).text())
+      countriesList.html('');
+    })
+  });
+</script>
+</body>
+</html>
