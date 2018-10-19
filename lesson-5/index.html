@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        ul {
+            list-style: none;
+        }
+
+        li {
+            position: relative;
+        }
+
+        li p {
+            margin-bottom: 5px;
+        }
+
+        li div {
+            display: flex;
+            align-items: center;
+        }
+
+        li span:not(.delete) {
+            font-size: 16px;
+            color: red;
+        }
+
+        li button {
+            font-size: 14px;
+            margin-right: 5px;
+            padding: 3px 10px !important;
+            cursor: pointer;
+        }
+
+        .delete {
+            position: absolute;
+            right: 10px;
+            top: calc(50% - 19px);
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <form id="add-comment-form">
+        <div class="form-group">
+            <label for="comment">Оставьте комментарий</label>
+            <textarea class="form-control" name="comment" id="comment"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+    <ul class="list-group mt-5"></ul>
+</div>
+
+<script src="./http.js"></script>
+<!--<script>
+  // глобальный объект для хранения данных о текущей (локальная версия)
+  const cart = {
+    userID: undefined, // id пользователя
+    cart: [] // сама корзина
+  };
+  const products = [
+    {
+      id: -1,
+      name: 'Не выбрано',
+      price: 0
+    },
+    {
+      id: 0,
+      name: 'iPhone X',
+      price: 75000
+    },
+    {
+      id: 1,
+      name: 'iPad',
+      price: 35000
+    },
+    {
+      id: 2,
+      name: 'Macbook Air',
+      price: 60000
+    },
+    {
+      id: 3,
+      name: 'Macbook Pro',
+      price: 135000
+    },
+  ]; // создаем массив списка товаров
+  const $http = new Http('http://89.108.65.123:8080'); // создаем инстанс HTTP-клиента
+
+  const renderInformation = () => { // функция для рендера списка и ID пользователя
+    const list = document.querySelector('.list-group'); // находим контейнер для списка
+    const inform = document.querySelector('#inform'); // находим контейнер для доп. информации
+    list.innerHTML = ''; // очищаем контейнер для списка
+    inform.innerHTML = `ПОЛЬЗОВАТЕЛЬ: ${cart.userID} - ${cart.cart.length}`; // перезаписываем информацию на ID пользователя и колличество элементов в корзине
+    cart.cart.forEach((item) => { // проходим по всем элементам корзины
+      list.innerHTML +=
+        `<li class="list-group-item" data-id="${item.product_id}">${item.product}</li>` // для каждого элемента создаем тег li в контейнере списка
+    });
+    const listItem = [...list.querySelectorAll('li')]; // собираем все созданные элементы в массив
+    listItem.forEach((li) => { // проходим по списку li
+      const productID = li.dataset.id; // у каждого элемента собираем аттрибут data-id
+      li.addEventListener('click', () => { // на каждом li создаем событие click
+        removeProduct(cart.userID, productID) // по клику вызываем метод remove и передаем в него userID и id продукта взятый из аттрибута
+      })
+    })
+  };
+  const fillProductsList = (selector, productList) => { // метод для формирования селекта из массива продуктов
+    const select = document.querySelector(selector); // забираем селект из DOM
+    select.innerHTML = ''; // Очищаем все в select'e
+    productList.forEach((product) => { // проходим по каждому элементу products
+      select.innerHTML += `<option
+        value="${product.id}">${product.name}</option>` // для каждого элемента создаем option в нашем select
+    })
+  };
+  const createCart = async () => { // асинхронный метод создания корзины
+    try { // обработчик ошибок
+      const userData = await $http.get('/shop'); // отправляем GET запрос на /shop, ждем результат
+      cart.userID = userData.user_id; // вытаскиваем ID пользователя из результата запроса и сохраняем в глобальной перменной
+      cart.cart = userData.cart // тоже самое с самой корзиной
+    } catch (e) {
+      console.error(e) // в случае ошибки вывести сообщение
+    }
+  };
+
+  const addProductToCart = (product) => { // метод для добавления продукта в козину, пушит в корзину и вызывает перерендер
+    cart.cart.push(product);
+    renderInformation()
+  };
+  const addProduct = async (e) => { // мето для добавления продукта на сервере в корзину
+    e.preventDefault();
+    const select = e.target.querySelector('select'); // получаем селект из форму
+    const idValue = select.value; // забираем его значение
+    if (idValue == -1) return; // выходим из функции если id равен -1
+    const product = products.find(product => product.id == idValue); // ищем продукт в массиве по ID
+    if (!product) return; // выходим из функции если продкут не найден
+    const queryString =
+      `user_id=${cart.userID}&product=${product.name}&price=${product.price}`; // создаем строку для запроса
+    const request = await $http.post('/shop', queryString); // выполняем POST запрос на добавление товара и ждем результат
+    addProductToCart(request) // вызываем метод для добавления товара в локальное отображение, передав туда результат запроса
+  };
+  const removeProduct = async (userId, productId) => { // асинхронный метод удаления продукта из корзины
+    const queryString = `user_id=${userId}&product_id=${productId}`; // из входных данных формируем строку для запроса
+    const cartData = await $http.delete('/shop', queryString); // вызываем метод DELETE на /shop и ждем результат
+    cart.cart = cartData.cart; // ответ от сервера записать в локальное отображение данных
+    renderInformation() // перерендер списка
+  };
+  const addListeners = () => { // навешиваем события
+    const productForm = document.querySelector('#add-product-form'); // забираем форму из DOM в перменную
+    productForm.addEventListener('submit', addProduct) // слушаем событие submit и вызываем при срабатывании addProduct
+  };
+
+  const init = async () => { // асинхронный метод для инциализации
+    addListeners(); // навешиваем события
+    fillProductsList('#product-list', products); // формируем  список продкутов по массиву
+    await createCart(); // инциализируем корзину и ждем выполнения это функции
+    renderInformation() // выполняем ренедр после инициализации
+  };
+
+  document.addEventListener('DOMContentLoaded', init); // запускаем функцию init после загрузки всего DOM дерева
+
+
+
+</script>-->
+<script>
+  const $http = new Http('http://89.108.65.123:8080');
+  const list = document.querySelector('.list-group');
+  const form = document.querySelector('#add-comment-form');
+  const input = document.querySelector('.form-control');
+  let commentsArr = [];
+
+  //вспомогательная функция для поиска предков
+  const findParents = function (element, parentClass) {
+    if (!parentClass) {
+      return element.parentElement;
+    } else {
+      let el = element.parentElement;
+      while (!el.classList.contains(parentClass)) {
+        el = el.parentElement;
+      }
+      return el;
+    }
+  };
+
+
+  const getComments = async () => {
+    list.innerHTML = 'Комментарии загружаются...';
+    commentsArr = await $http.get('/comments');
+  };
+
+  const drawComments = () => {
+    let text = '';
+    commentsArr.forEach(item => {
+      text +=
+        `<li class="list-group-item" data-id="${item.comment_id}">
+            <p>${item.text}</p>
+            <div>
+                <button class="btn btn--like btn-outline-success">like</button>
+                <span>&hearts; ${item.likes}</span>
+            </div>
+            <span class="delete btn btn-danger">delete</span>
+        </li>`
+    });
+    list.innerHTML = text;
+  };
+
+  const addComment = async (e) => {
+    e.preventDefault();
+    const queryString = `text=${input.value}`;
+    await $http.post('/comments', queryString);
+    await getComments();
+    drawComments();
+  };
+
+  const likeComment = async (element) => {
+    const id = findParents(element, 'list-group-item').dataset.id;
+    const queryString = `comment_id=${id}`;
+    await $http.patch('/comments', queryString);
+    await getComments();
+    drawComments();
+  };
+  const deleteComment = async (element) => {
+    const id = findParents(element).dataset.id;
+    const queryString = `comment_id=${id}`;
+    await $http.delete('/comments', queryString);
+    await getComments();
+    drawComments();
+  };
+
+  const addListeners = () => { // навешиваем события
+    form.addEventListener('submit', addComment);
+    list.addEventListener('click', (e) => {
+      if (e.target.classList.contains('btn--like')) {
+        likeComment(e.target)
+      }
+      if (e.target.classList.contains('delete')) {
+        deleteComment(e.target)
+      }
+    })
+  };
+  const init = async () => {
+    addListeners();
+    await getComments();
+    drawComments()
+  };
+
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
